@@ -1,0 +1,30 @@
+<div class="auth-card">
+  <h1>登入</h1>
+  <p class="subtitle">命理大師 · 陳玉樓</p>
+  <form (ngSubmit)="submit()">
+    <label>
+      信箱
+      <input type="email" name="email" [(ngModel)]="email" required autocomplete="email" />
+    </label>
+    <label>
+      密碼
+      <input type="password" name="password" [(ngModel)]="password" required autocomplete="current-password" />
+    </label>
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
+    @if (needsVerification) {
+      <button type="button" class="secondary" [disabled]="resendLoading" (click)="resend()">
+        {{ resendLoading ? '發送中…' : '重新發送驗證信' }}
+      </button>
+    }
+    @if (resendMsg) {
+      <p class="success">{{ resendMsg }}</p>
+    }
+    <button type="submit" [disabled]="loading">{{ loading ? '登入中…' : '登入' }}</button>
+  </form>
+  <p class="foot">
+    還沒有帳號？<a routerLink="/register">註冊</a>
+    · <button type="button" class="link-btn" [disabled]="resendLoading" (click)="resend()">重發驗證信</button>
+  </p>
+</div>

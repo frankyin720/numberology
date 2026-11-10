@@ -1,0 +1,78 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: numerology-backend
+  datasource:
+    url: jdbc:sqlite:${NUMEROLOGY_DB_PATH:./data/numerology.db}
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+  ai:
+    openai:
+      api-key: ${DEEPSEEK_API_KEY:}
+      # 勿带 /v1，Spring AI 会自行拼接 /v1/chat/completions
+      base-url: ${SPRING_AI_OPENAI_BASE_URL:https://api.deepseek.com}
+      chat:
+        options:
+          model: ${SPRING_AI_CHAT_MODEL:deepseek-chat}
+          temperature: 0.7
+  mail:
+    host: ${SPRING_MAIL_HOST:smtp-relay.brevo.com}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME:${BREVO_SMTP_LOGIN:}}
+    password: ${BREVO_SMTP_KEY:${SPRING_MAIL_PASSWORD:}}
+    properties:
+      mail:
+        smtp:
+          auth: ${SPRING_MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${SPRING_MAIL_STARTTLS:true}
+
+# 大模型往返见 LlmExchangeLogger；仅开 llm.exchange=DEBUG，勿把 root 设为 DEBUG。
+logging:
+  level:
+    root: INFO
+    com.webest.numerology: INFO
+    llm.exchange: DEBUG
+    org.apache.tomcat.util.compat: WARN
+    org.apache.juli.logging: WARN
+    org.hibernate: INFO
+    # Jakarta Mail/Activation 会探测 ~/.mime.types、$JAVA_HOME/conf/mime.types；文件不存在时会打 DEBUG，可忽略
+    jakarta.activation: WARN
+    jakarta.mail: WARN
+    org.eclipse.angus: WARN
+
+numerology:
+  app:
+    public-url: ${NUMEROLOGY_PUBLIC_URL:http://localhost:4200}
+  auth:
+    verification-expiry-hours: ${NUMEROLOGY_VERIFICATION_HOURS:24}
+    token-expiry-days: ${NUMEROLOGY_TOKEN_DAYS:30}
+  mail:
+    from: ${NUMEROLOGY_MAIL_FROM:noreply@numerology.local}
+  llm:
+    log-interactions: ${LLM_LOG_INTERACTIONS:true}
+  yuanfenju:
+    enabled: ${YUANFENJU_ENABLED:false}
+    base-url: ${YUANFENJU_BASE_URL:https://api.yuanfenju.com/index.php/v1}
+    api-key: ${YUANFENJU_API_KEY:}
+    # 相对 base-url 的路径（也可通过环境变量覆盖为绝对 URL）
+    bazi-path: ${YUANFENJU_BAZI_PATH:/Bazi/cesuan}
+    zhanbu-path: ${YUANFENJU_ZHANBU_PATH:/Zhanbu/meiri}
+    zhougong-path: ${YUANFENJU_ZHOUGONG_PATH:/Gongju/zhougong}
+  serp:
+    enabled: ${SERPAPI_ENABLED:false}
+    base-url: ${SERPAPI_BASE_URL:https://serpapi.com/search.json}
+    api-key: ${SERPAPI_API_KEY:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

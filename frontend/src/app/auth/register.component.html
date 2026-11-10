@@ -1,0 +1,39 @@
+<div class="auth-card">
+  <h1>註冊</h1>
+  <p class="subtitle">註冊後請至信箱完成驗證</p>
+  <form (ngSubmit)="submit()">
+    <label>
+      信箱
+      <input type="email" name="email" [(ngModel)]="email" required autocomplete="email" />
+    </label>
+    <label>
+      密碼（至少 8 字）
+      <input type="password" name="password" [(ngModel)]="password" required minlength="8" />
+    </label>
+    <label>
+      確認密碼
+      <input type="password" name="confirm" [(ngModel)]="confirm" required />
+    </label>
+    @if (error) {
+      <p class="error">{{ error }}</p>
+      @if (showResendOnError) {
+        <button type="button" class="secondary" [disabled]="resendLoading" (click)="resend()">
+          {{ resendLoading ? '發送中…' : '重新發送驗證信' }}
+        </button>
+      }
+    }
+    @if (success) {
+      <p class="success">{{ success }}</p>
+      <button type="button" class="secondary" [disabled]="resendLoading" (click)="resend()">
+        {{ resendLoading ? '發送中…' : '重新發送驗證信' }}
+      </button>
+      @if (resendMsg) {
+        <p class="success">{{ resendMsg }}</p>
+      }
+      <button type="button" class="secondary" (click)="goLogin()">前往登入</button>
+    } @else {
+      <button type="submit" [disabled]="loading">{{ loading ? '提交中…' : '註冊' }}</button>
+    }
+  </form>
+  <p class="foot">已有帳號？<a routerLink="/login">登入</a></p>
+</div>

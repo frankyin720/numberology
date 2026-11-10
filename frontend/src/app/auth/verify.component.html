@@ -1,0 +1,7 @@
+<div class="auth-card">
+  <h1>信箱驗證</h1>
+  <p [class.success]="ok" [class.error]="!ok">{{ message }}</p>
+  @if (ok) {
+    <a class="link-btn" routerLink="/login">前往登入</a>
+  }
+</div>

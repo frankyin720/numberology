@@ -1,0 +1,107 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <button type="button" class="new-btn" [disabled]="loading" (click)="newConversation()">＋ 新會話</button>
+    </div>
+    <ul class="conv-list">
+      @if (listLoading) {
+        <li class="muted">載入中…</li>
+      }
+      @for (c of conversations; track c.id) {
+        <li>
+          <div class="conv-row" [class.active]="c.id === activeConversationId">
+            @if (editingConversationId === c.id) {
+              <input
+                type="text"
+                class="conv-rename-input"
+                [(ngModel)]="editingTitle"
+                name="rename-{{ c.id }}"
+                maxlength="120"
+                (click)="$event.stopPropagation()"
+                (blur)="onRenameBlur($event, c.id)"
+                (keydown)="onRenameKeydown($event, c.id)"
+              />
+            } @else {
+              <button
+                type="button"
+                class="conv-select"
+                (click)="selectConversation(c.id)"
+              >
+                <span class="conv-title">{{ c.title }}</span>
+              </button>
+              <div class="conv-actions">
+                <button
+                  type="button"
+                  class="conv-rename"
+                  title="重新命名"
+                  [disabled]="loading"
+                  (click)="startRename($event, c)"
+                >
+                  ✎
+                </button>
+                <button
+                  type="button"
+                  class="conv-delete"
+                  title="刪除會話"
+                  [disabled]="loading"
+                  (click)="deleteConversation($event, c)"
+                >
+                  ×
+                </button>
+              </div>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+    <div class="sidebar-bottom">
+      <hr class="sidebar-divider" />
+      <button type="button" class="profile-btn" (click)="goProfile()">個人資料</button>
+      <button type="button" class="logout-btn" (click)="logout()">登出</button>
+    </div>
+  </aside>
+
+  <main class="chat-panel">
+    <header class="chat-header">
+      <div class="avatar" aria-hidden="true">陳</div>
+      <div class="header-info">
+        <h1>陳玉樓大師</h1>
+        <p>不誠不算，不義不算</p>
+      </div>
+    </header>
+
+    <div class="chat-messages">
+      @for (m of messages; track $index) {
+        <div class="message" [class.bot-message]="m.role === 'bot'" [class.user-message]="m.role === 'user'">
+          {{ m.text }}
+        </div>
+      }
+      @if (loading) {
+        <div class="message bot-message typing">大師掐指一算中…</div>
+      }
+    </div>
+
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
+
+    <form class="chat-input" (ngSubmit)="send()">
+      <textarea
+        [(ngModel)]="userInput"
+        name="query"
+        rows="2"
+        placeholder="請輸入您的問題…（Enter 送出，Shift+Enter 換行）"
+        [disabled]="loading || !activeConversationId"
+        (keydown.enter)="onEnterKey($event)"
+      ></textarea>
+      <button type="submit" [disabled]="loading || !userInput.trim() || !activeConversationId">送出</button>
+    </form>
+  </main>
+</div>
+
+<app-profile-dialog
+  [open]="profileOpen"
+  [required]="profileRequired"
+  (closed)="onProfileClosed()"
+  (saved)="onProfileSaved()"
+/>

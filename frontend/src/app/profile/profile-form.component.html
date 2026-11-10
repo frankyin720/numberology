@@ -1,0 +1,136 @@
+<h2 class="form-title">個人資料</h2>
+<p class="subtitle">{{ hint }}</p>
+<form (ngSubmit)="submit()">
+  <div class="email-row">
+    <label class="email-field">
+      登入信箱
+      <input type="email" name="accountEmail" [value]="email" readonly tabindex="-1" />
+    </label>
+    <button type="button" class="change-pwd-btn" (click)="togglePasswordForm()">
+      {{ showPasswordForm ? '取消' : '修改密碼' }}
+    </button>
+  </div>
+  @if (showPasswordForm) {
+    <div class="password-panel">
+      <label>
+        目前密碼
+        <input
+          type="password"
+          name="currentPassword"
+          [(ngModel)]="currentPassword"
+          autocomplete="current-password"
+        />
+      </label>
+      <label>
+        新密碼
+        <input
+          type="password"
+          name="newPassword"
+          [(ngModel)]="newPassword"
+          autocomplete="new-password"
+        />
+      </label>
+      <label>
+        確認新密碼
+        <input
+          type="password"
+          name="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          autocomplete="new-password"
+        />
+      </label>
+      @if (passwordError) {
+        <p class="error">{{ passwordError }}</p>
+      }
+      @if (passwordSuccess) {
+        <p class="success">{{ passwordSuccess }}</p>
+      }
+      <button type="button" class="password-submit" [disabled]="passwordLoading" (click)="changePassword()">
+        {{ passwordLoading ? '更新中…' : '確認修改密碼' }}
+      </button>
+    </div>
+  }
+  <div class="form-row form-row-name">
+    <label class="col-name">
+      姓名（可只填姓氏或化名）
+      <input type="text" name="fullName" [(ngModel)]="model.fullName" required />
+    </label>
+    <label class="col-gender">
+      性別
+      <select name="gender" [(ngModel)]="model.gender" required>
+        <option value="MALE">男</option>
+        <option value="FEMALE">女</option>
+      </select>
+    </label>
+  </div>
+  <div class="form-row form-row-birth">
+    <label class="col-calendar">
+      曆法
+      <select name="calendarType" [(ngModel)]="model.calendarType" required>
+        <option value="SOLAR">陽曆</option>
+        <option value="LUNAR">農曆</option>
+      </select>
+    </label>
+    <label class="col-date">
+      出生年月日
+      @if (model.calendarType === 'SOLAR') {
+        <input
+          type="date"
+          name="birthDate"
+          class="date-input"
+          [(ngModel)]="model.birthDate"
+          [max]="today"
+          required
+        />
+      } @else {
+        <input
+          type="text"
+          name="birthDate"
+          [(ngModel)]="model.birthDate"
+          placeholder="農曆一九九〇年四月初七"
+          required
+        />
+      }
+    </label>
+    <label class="col-time">
+      出生時辰
+      <select name="birthTime" [(ngModel)]="model.birthTime" required>
+        @for (slot of birthTimeSlots; track slot.value) {
+          <option [value]="slot.value">{{ birthTimeLabel(slot) }}</option>
+        }
+      </select>
+    </label>
+  </div>
+  @if (model.calendarType === 'LUNAR') {
+    <p class="field-hint row-hint">農曆日期請用文字描述</p>
+  }
+  <div class="form-row form-row-place">
+    <label class="col-half">
+      出生地（省/市）
+      <input type="text" name="birthPlace" [(ngModel)]="model.birthPlace" placeholder="廣東省廣州市" required />
+    </label>
+    <label class="col-half">
+      現居地點
+      <input
+        type="text"
+        name="currentResidence"
+        [(ngModel)]="model.currentResidence"
+        placeholder="上海市"
+        required
+      />
+    </label>
+  </div>
+  <label>
+    時區
+    <select name="timezone" [(ngModel)]="model.timezone" required>
+      @for (tz of timezoneOptions; track tz.value) {
+        <option [value]="tz.value">{{ tz.label }}</option>
+      }
+    </select>
+    <span class="field-hint">用於換算您當地時間與真太陽時參考</span>
+  </label>
+  @if (error) {
+    <p class="error">{{ error }}</p>
+  }
+  <button type="submit" [disabled]="loading">{{ loading ? '保存中…' : submitLabel }}</button>
+</form>

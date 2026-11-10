@@ -1,0 +1,16 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'PingFang TC', 'Microsoft YaHei', sans-serif;
+  background: #f5f5dc;
+  color: #333;
+}
+
+app-root {
+  display: block;
+  min-height: 100%;
+}
